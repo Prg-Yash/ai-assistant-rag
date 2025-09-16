@@ -1,0 +1,7 @@
+pathway
+google-generativeai
+python-dotenv
+requests
+streamlit
+scikit-learn
+numpy

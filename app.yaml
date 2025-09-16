@@ -1,0 +1,46 @@
+# app.yaml
+question_answerer:
+  kind: summary_question_answerer
+
+  documents:
+    - kind: file
+      id: local_news_file
+      path: data/news.txt
+      format: text
+      poll_interval: 5s
+
+    # optional: News API (requires NEWS_API_KEY in .env)
+    - kind: http
+      id: news_api
+      url: "https://newsapi.org/v2/top-headlines?country=in&pageSize=8&apiKey=9807d23ac8c84e2596f2103bff404fa4"
+      format: json
+      pointer: "/articles/*"
+      # specify which fields to extract or let Pathway decide
+      extract:
+        - title
+        - description
+      poll_interval: 30s
+
+    # optional: coin prices from coingecko (no key required)
+    - kind: http
+      id: crypto_api
+      url: "https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum&vs_currencies=usd"
+      format: json
+      pointer: "/*"
+      poll_interval: 15s
+
+    # optional: weather (requires OPENWEATHER_KEY)
+    - kind: http
+      id: weather_api
+      url: "https://api.openweathermap.org/data/2.5/weather?q=Mumbai&units=metric&appid=${OPENWEATHER_KEY}"
+      format: json
+      pointer: "/"
+      poll_interval: 60s
+
+  # NOTE: We will override the LLM to Gemini programmatically in app.py
+
+server:
+  host: "0.0.0.0"
+  port: 8000
+  with_cache: true
+  terminate_on_error: false
